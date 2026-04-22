@@ -7,8 +7,9 @@ from aiogram.filters import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.exceptions import TelegramBadRequest
 
-# Твой токен
-TOKEN = "7982097097:AAGDEri9jtm_-kSJ9pHn6k5S2GB7BOREKWM"
+# Рекомендуется задать переменную окружения BOT_TOKEN в настройках Render
+# Если ее нет, будет использоваться значение по умолчанию
+TOKEN = os.getenv("BOT_TOKEN", "7982097097:AAGDEri9jtm_-kSJ9pHn6k5S2GB7BOREKWM")
 
 logging.basicConfig(level=logging.INFO)
 
@@ -222,7 +223,9 @@ async def start_webserver():
     app.router.add_get("/", handle_health)
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, "0.0.0.0", int(os.environ.get("PORT", 8080)))
+    # Render передает PORT автоматически
+    port = int(os.environ.get("PORT", 8080))
+    site = web.TCPSite(runner, "0.0.0.0", port)
     await site.start()
 
 async def main():
