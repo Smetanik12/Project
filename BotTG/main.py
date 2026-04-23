@@ -12,7 +12,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Токен берется из переменных окружения
-TOKEN = os.getenv("BOT_TOKEN", "7982097097:AAGDEri9jtm_-kSJ9pHn6k5S2GB7BOREKWM")
+export BOT_TOKEN=7982097097:AAFnAeD_wM7OhTgbvIBHRbPXcmuxsTndNHk
+python bot.py
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
