@@ -21,7 +21,7 @@ except ImportError:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-TOKEN = "7982097097:AAHdRqIN_7UC_W57n5R4Irer4cIBcFj8LHM"
+TOKEN = "7982097097:AAHBNsw-pPdXWeOjjD_XNs93ls1xpx0JH5s"
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
