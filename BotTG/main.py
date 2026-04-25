@@ -9,25 +9,21 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 # Пытаемся импортировать промты
 try:
-    from prompts import PROMPT_EGE, PROMPT_ITOG, PROMPT_SPORT, PROMPT_COOKING
+    from prompts import (
+        PROMPT_EGE, PROMPT_ITOG, PROMPT_SPORT, 
+        PROMPT_COOKING, PROMPT_SMM, PROMPT_RESUME, 
+        PROMPT_COVER_LETTER, PROMPT_GAME_HISTORY
+    )
 except ImportError:
-    # Если файл не найден, создаем заглушки, чтобы бот не падал
-    PROMPT_EGE = "Ошибка: файл prompts.py не найден"
-    PROMPT_ITOG = "Ошибка: файл prompts.py не найден"
-    PROMPT_SPORT = "Ошибка: файл prompts.py не найден"
-    PROMPT_COOKING = "Ошибка: файл prompts.py не найден"
+    PROMPT_EGE = PROMPT_ITOG = PROMPT_SPORT = PROMPT_COOKING = PROMPT_SMM = PROMPT_RESUME = PROMPT_COVER_LETTER = PROMPT_GAME_HISTORY = "Ошибка: файл prompts.py не найден"
 
-# Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Твой новый токен
 TOKEN = "7982097097:AAHdRqIN_7UC_W57n5R4Irer4cIBcFj8LHM"
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
-
-# Кэш для реализации "одного окна"
 last_messages = {}
 
 async def update_interface(chat_id: int, text: str, reply_markup=None):
@@ -44,7 +40,6 @@ async def update_interface(chat_id: int, text: str, reply_markup=None):
             return
         except Exception:
             pass
-
     try:
         sent_message = await bot.send_message(
             chat_id=chat_id,
@@ -63,6 +58,8 @@ def main_inline_menu():
     builder.row(types.InlineKeyboardButton(text="🇷🇺 Русский язык", callback_data="cat_rus"))
     builder.row(types.InlineKeyboardButton(text="🍳 Кулинария", callback_data="cat_cook"))
     builder.row(types.InlineKeyboardButton(text="🏋️ Спорт и Здоровье", callback_data="cat_sport"))
+    builder.row(types.InlineKeyboardButton(text="💼 Работа", callback_data="cat_work"))
+    builder.row(types.InlineKeyboardButton(text="🎮 Игра", callback_data="cat_game"))
     return builder.as_markup()
 
 def russian_menu():
@@ -84,6 +81,20 @@ def cooking_menu():
     builder.row(types.InlineKeyboardButton(text="⬅️ Назад", callback_data="main_menu"))
     return builder.as_markup()
 
+def work_menu():
+    builder = InlineKeyboardBuilder()
+    builder.row(types.InlineKeyboardButton(text="📱 SMM-посты", callback_data="prompt_smm"))
+    builder.row(types.InlineKeyboardButton(text="📄 Резюме", callback_data="prompt_resume"))
+    builder.row(types.InlineKeyboardButton(text="✉️ Сопроводительное письмо", callback_data="prompt_cover"))
+    builder.row(types.InlineKeyboardButton(text="⬅️ Назад", callback_data="main_menu"))
+    return builder.as_markup()
+
+def game_menu():
+    builder = InlineKeyboardBuilder()
+    builder.row(types.InlineKeyboardButton(text="🎭 Исторический собеседник", callback_data="prompt_history"))
+    builder.row(types.InlineKeyboardButton(text="⬅️ Назад", callback_data="main_menu"))
+    return builder.as_markup()
+
 def back_button(target: str):
     builder = InlineKeyboardBuilder()
     builder.row(types.InlineKeyboardButton(text="⬅️ Назад к списку", callback_data=target))
@@ -93,15 +104,11 @@ def back_button(target: str):
 
 @dp.message(Command("start"))
 async def start_command(message: types.Message):
-    await update_interface(
-        message.chat.id, 
-        "👋 **Выберите категорию:**", 
-        main_inline_menu()
-    )
+    await update_interface(message.chat.id, "👋 **Выберите категорию:**", main_inline_menu())
 
 @dp.callback_query(F.data == "main_menu")
 async def handle_main_menu(callback: types.CallbackQuery):
-    await update_interface(callback.message.chat.id, "Выбери категорию промтов 👇", main_inline_menu())
+    await update_interface(callback.message.chat.id, "Выберите категорию 👇", main_inline_menu())
     await callback.answer()
 
 @dp.callback_query(F.data == "cat_rus")
@@ -117,6 +124,16 @@ async def handle_sport(callback: types.CallbackQuery):
 @dp.callback_query(F.data == "cat_cook")
 async def handle_cook(callback: types.CallbackQuery):
     await update_interface(callback.message.chat.id, "🍳 **Кулинария**", cooking_menu())
+    await callback.answer()
+
+@dp.callback_query(F.data == "cat_work")
+async def handle_work(callback: types.CallbackQuery):
+    await update_interface(callback.message.chat.id, "💼 **Работа**", work_menu())
+    await callback.answer()
+
+@dp.callback_query(F.data == "cat_game")
+async def handle_game(callback: types.CallbackQuery):
+    await update_interface(callback.message.chat.id, "🎮 **Игра**", game_menu())
     await callback.answer()
 
 # Вывод промтов
@@ -140,12 +157,32 @@ async def send_cooking(callback: types.CallbackQuery):
     await update_interface(callback.message.chat.id, PROMPT_COOKING, back_button("cat_cook"))
     await callback.answer()
 
+@dp.callback_query(F.data == "prompt_smm")
+async def send_smm(callback: types.CallbackQuery):
+    await update_interface(callback.message.chat.id, PROMPT_SMM, back_button("cat_work"))
+    await callback.answer()
+
+@dp.callback_query(F.data == "prompt_resume")
+async def send_resume(callback: types.CallbackQuery):
+    await update_interface(callback.message.chat.id, PROMPT_RESUME, back_button("cat_work"))
+    await callback.answer()
+
+@dp.callback_query(F.data == "prompt_cover")
+async def send_cover(callback: types.CallbackQuery):
+    await update_interface(callback.message.chat.id, PROMPT_COVER_LETTER, back_button("cat_work"))
+    await callback.answer()
+
+@dp.callback_query(F.data == "prompt_history")
+async def send_history(callback: types.CallbackQuery):
+    await update_interface(callback.message.chat.id, PROMPT_GAME_HISTORY, back_button("cat_game"))
+    await callback.answer()
+
 # --- WEB SERVER FOR RENDER ---
 
 async def handle_health(request):
     return web.Response(text="OK")
 
-async def start_webserver():
+async def main():
     app = web.Application()
     app.router.add_get("/", handle_health)
     runner = web.AppRunner(app)
@@ -153,9 +190,6 @@ async def start_webserver():
     port = int(os.environ.get("PORT", 8080))
     site = web.TCPSite(runner, "0.0.0.0", port)
     await site.start()
-
-async def main():
-    asyncio.create_task(start_webserver())
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
