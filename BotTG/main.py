@@ -1,12 +1,12 @@
 import asyncio
 import logging
 import os
-import sys
 from aiohttp import web
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.exceptions import TelegramBadRequest
+from aiogram.fsm.context import FSMContext # Добавили для сброса состояний
 
 # Пытаемся импортировать промты
 try:
@@ -21,23 +21,22 @@ except ImportError:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Твой токен
 TOKEN = "7982097097:AAHBNsw-pPdXWeOjjD_XNs93ls1xpx0JH5s"
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# Хранилище последних сообщений и блокировки для предотвращения дублирования
+# Хранилище последних сообщений и блокировки
 last_messages = {}
 user_locks = {}
 
 def get_user_lock(chat_id: int):
-    """Создает или возвращает замок для конкретного пользователя"""
     if chat_id not in user_locks:
         user_locks[chat_id] = asyncio.Lock()
     return user_locks[chat_id]
 
 async def update_interface(chat_id: int, text: str, reply_markup=None):
-    """Обновляет текущее сообщение или присылает новое с защитой от гонки состояний"""
     lock = get_user_lock(chat_id)
     async with lock:
         if chat_id in last_messages:
@@ -51,14 +50,12 @@ async def update_interface(chat_id: int, text: str, reply_markup=None):
                 )
                 return
             except TelegramBadRequest as e:
-                # Если текст совпадает или сообщение не найдено, не паникуем
                 if "message is not modified" in str(e):
                     return
                 logger.warning(f"Не удалось отредактировать: {e}")
             except Exception as e:
                 logger.error(f"Ошибка при правке: {e}")
 
-        # Если не удалось отредактировать или сообщения еще нет — отправляем новое
         try:
             sent_message = await bot.send_message(
                 chat_id=chat_id,
@@ -122,79 +119,59 @@ def back_button(target: str):
 # --- ОБРАБОТЧИКИ ---
 
 @dp.message(Command("start"))
-async def start_command(message: types.Message):
+async def start_command(message: types.Message, state: FSMContext):
+    await state.clear() # Сбрасываем всё, чтобы бот точно увидел команду
     await update_interface(message.chat.id, "👋 **Выберите категорию:**", main_inline_menu())
 
 @dp.callback_query(F.data == "main_menu")
-async def handle_main_menu(callback: types.CallbackQuery):
-    await callback.answer() # Сразу убираем состояние загрузки у кнопки
+async def handle_main_menu(callback: types.CallbackQuery, state: FSMContext):
+    await state.clear()
+    await callback.answer()
     await update_interface(callback.message.chat.id, "Выберите категорию 👇", main_inline_menu())
 
-@dp.callback_query(F.data == "cat_rus")
-async def handle_rus(callback: types.CallbackQuery):
+# Группы кнопок
+@dp.callback_query(F.data.startswith("cat_"))
+async def categories_handler(callback: types.CallbackQuery):
     await callback.answer()
-    await update_interface(callback.message.chat.id, "🇷🇺 **Русский язык**", russian_menu())
-
-@dp.callback_query(F.data == "cat_sport")
-async def handle_sport(callback: types.CallbackQuery):
-    await callback.answer()
-    await update_interface(callback.message.chat.id, "🏋️ **Спорт и Здоровье**", sport_menu())
-
-@dp.callback_query(F.data == "cat_cook")
-async def handle_cook(callback: types.CallbackQuery):
-    await callback.answer()
-    await update_interface(callback.message.chat.id, "🍳 **Кулинария**", cooking_menu())
-
-@dp.callback_query(F.data == "cat_work")
-async def handle_work(callback: types.CallbackQuery):
-    await callback.answer()
-    await update_interface(callback.message.chat.id, "💼 **Работа**", work_menu())
-
-@dp.callback_query(F.data == "cat_game")
-async def handle_game(callback: types.CallbackQuery):
-    await callback.answer()
-    await update_interface(callback.message.chat.id, "🎮 **Игра**", game_menu())
+    if callback.data == "cat_rus":
+        await update_interface(callback.message.chat.id, "🇷🇺 **Русский язык**", russian_menu())
+    elif callback.data == "cat_sport":
+        await update_interface(callback.message.chat.id, "🏋️ **Спорт и Здоровье**", sport_menu())
+    elif callback.data == "cat_cook":
+        await update_interface(callback.message.chat.id, "🍳 **Кулинария**", cooking_menu())
+    elif callback.data == "cat_work":
+        await update_interface(callback.message.chat.id, "💼 **Работа**", work_menu())
+    elif callback.data == "cat_game":
+        await update_interface(callback.message.chat.id, "🎮 **Игра**", game_menu())
 
 # Вывод промтов
-@dp.callback_query(F.data == "prompt_ege")
-async def send_ege(callback: types.CallbackQuery):
+@dp.callback_query(F.data.startswith("prompt_"))
+async def prompts_handler(callback: types.CallbackQuery):
     await callback.answer()
-    await update_interface(callback.message.chat.id, PROMPT_EGE, back_button("cat_rus"))
+    data = callback.data
+    if data == "prompt_ege":
+        await update_interface(callback.message.chat.id, PROMPT_EGE, back_button("cat_rus"))
+    elif data == "prompt_itog":
+        await update_interface(callback.message.chat.id, PROMPT_ITOG, back_button("cat_rus"))
+    elif data == "prompt_sport_coach":
+        await update_interface(callback.message.chat.id, PROMPT_SPORT, back_button("cat_sport"))
+    elif data == "prompt_cooking_uni":
+        await update_interface(callback.message.chat.id, PROMPT_COOKING, back_button("cat_cook"))
+    elif data == "prompt_smm":
+        await update_interface(callback.message.chat.id, PROMPT_SMM, back_button("cat_work"))
+    elif data == "prompt_resume":
+        await update_interface(callback.message.chat.id, PROMPT_RESUME, back_button("cat_work"))
+    elif data == "prompt_cover":
+        await update_interface(callback.message.chat.id, PROMPT_COVER_LETTER, back_button("cat_work"))
+    elif data == "prompt_history":
+        await update_interface(callback.message.chat.id, PROMPT_GAME_HISTORY, back_button("cat_game"))
 
-@dp.callback_query(F.data == "prompt_itog")
-async def send_itog(callback: types.CallbackQuery):
-    await callback.answer()
-    await update_interface(callback.message.chat.id, PROMPT_ITOG, back_button("cat_rus"))
-
-@dp.callback_query(F.data == "prompt_sport_coach")
-async def send_sport(callback: types.CallbackQuery):
-    await callback.answer()
-    await update_interface(callback.message.chat.id, PROMPT_SPORT, back_button("cat_sport"))
-
-@dp.callback_query(F.data == "prompt_cooking_uni")
-async def send_cooking(callback: types.CallbackQuery):
-    await callback.answer()
-    await update_interface(callback.message.chat.id, PROMPT_COOKING, back_button("cat_cook"))
-
-@dp.callback_query(F.data == "prompt_smm")
-async def send_smm(callback: types.CallbackQuery):
-    await callback.answer()
-    await update_interface(callback.message.chat.id, PROMPT_SMM, back_button("cat_work"))
-
-@dp.callback_query(F.data == "prompt_resume")
-async def send_resume(callback: types.CallbackQuery):
-    await callback.answer()
-    await update_interface(callback.message.chat.id, PROMPT_RESUME, back_button("cat_work"))
-
-@dp.callback_query(F.data == "prompt_cover")
-async def send_cover(callback: types.CallbackQuery):
-    await callback.answer()
-    await update_interface(callback.message.chat.id, PROMPT_COVER_LETTER, back_button("cat_work"))
-
-@dp.callback_query(F.data == "prompt_history")
-async def send_history(callback: types.CallbackQuery):
-    await callback.answer()
-    await update_interface(callback.message.chat.id, PROMPT_GAME_HISTORY, back_button("cat_game"))
+# --- ГЛОБАЛЬНЫЙ ОБРАБОТЧИК (ЛОВУШКА) ---
+# Срабатывает на любой текст, который не является командой или нажатием кнопки
+@dp.message()
+async def any_message_handler(message: types.Message, state: FSMContext):
+    await state.clear()
+    await update_interface(message.chat.id, "Я готов к работе! Выбери категорию промтов ниже:", main_inline_menu())
 
 # --- WEB SERVER FOR RENDER ---
 
@@ -209,6 +186,8 @@ async def main():
     port = int(os.environ.get("PORT", 8080))
     site = web.TCPSite(runner, "0.0.0.0", port)
     await site.start()
+    
+    # Запуск бота
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
