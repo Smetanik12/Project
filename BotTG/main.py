@@ -37,10 +37,13 @@ def get_user_lock(chat_id: int):
     return user_locks[chat_id]
 
 async def update_interface(chat_id: int, text: str, reply_markup=None):
+    """Обновляет текущее сообщение или присылает новое, если старое удалено"""
     lock = get_user_lock(chat_id)
     async with lock:
+        success = False
         if chat_id in last_messages:
             try:
+                # Пытаемся отредактировать
                 await bot.edit_message_text(
                     text=text,
                     chat_id=chat_id,
@@ -48,24 +51,25 @@ async def update_interface(chat_id: int, text: str, reply_markup=None):
                     reply_markup=reply_markup,
                     parse_mode="Markdown"
                 )
-                return
-            except TelegramBadRequest as e:
-                if "message is not modified" in str(e):
-                    return
-                logger.warning(f"Не удалось отредактировать: {e}")
+                success = True
             except Exception as e:
-                logger.error(f"Ошибка при правке: {e}")
+                # Если сообщение удалено пользователем (очистка чата), 
+                # редактирование всегда выдаст ошибку.
+                logger.info(f"Редактирование не удалось (возможно, чат очищен): {e}")
+                success = False
 
-        try:
-            sent_message = await bot.send_message(
-                chat_id=chat_id,
-                text=text,
-                reply_markup=reply_markup,
-                parse_mode="Markdown"
-            )
-            last_messages[chat_id] = sent_message.message_id
-        except Exception as e:
-            logger.error(f"Ошибка отправки нового сообщения: {e}")
+        # Если редактирование не получилось (success == False), отправляем НОВОЕ сообщение
+        if not success:
+            try:
+                sent_message = await bot.send_message(
+                    chat_id=chat_id,
+                    text=text,
+                    reply_markup=reply_markup,
+                    parse_mode="Markdown"
+                )
+                last_messages[chat_id] = sent_message.message_id
+            except Exception as e:
+                logger.error(f"Критическая ошибка отправки: {e}")
 
 # --- КЛАВИАТУРЫ ---
 
