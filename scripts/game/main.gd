@@ -43,6 +43,10 @@ func _ready() -> void:
 	if cli.has("zoom"):
 		camera.zoom = Vector2.ONE * float(cli["zoom"])
 	if cli.has("talk"):
+		var near := _nearest_npc(999.0)
+		if near != null:
+			world.player.pos = Vector2(near.pos) + Vector2(1.5, 0.5)
+			camera.position = world.player.pos * TILE
 		_interact()
 		if dialogue.visible:
 			dialogue._do("ask", "self")

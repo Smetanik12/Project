@@ -82,7 +82,9 @@ func role_name() -> String:
 	if titles.has(role):
 		return str(titles[role])
 	if role == "slave" and faction == "":
-		return "Беглый раб"
+		return "Беглая рабыня" if female else "Беглый раб"
+	if female and role_info().has("name_f"):
+		return str(role_info()["name_f"])
 	return str(role_info().get("name", role))
 
 

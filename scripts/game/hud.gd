@@ -176,6 +176,9 @@ func update_hud(speed_name: String, hint_text: String) -> void:
 	status.text = "   ".join(PackedStringArray(parts))
 	hint.text = hint_text
 	_update_journal()
+	# при быстрой перемотке показываем только последние сообщения
+	if world.notices.size() > 3:
+		world.notices = world.notices.slice(world.notices.size() - 3)
 	while not world.notices.is_empty():
 		_toast(str(world.notices.pop_front()))
 
@@ -209,8 +212,10 @@ func _toast(text: String) -> void:
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	p.add_child(l)
 	toasts.add_child(p)
-	if toasts.get_child_count() > 4:
-		toasts.get_child(0).queue_free()
+	while toasts.get_child_count() > 4:
+		var old := toasts.get_child(0)
+		toasts.remove_child(old)
+		old.queue_free()
 	var tw := p.create_tween()
 	tw.tween_interval(5.0)
 	tw.tween_property(p, "modulate:a", 0.0, 1.0)

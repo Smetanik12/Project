@@ -104,18 +104,32 @@ func _player_hourly() -> void:
 	if not player.alive:
 		return
 	player.hunger += 3.0
-	if player.hunger >= 60.0 and int(player.inv.get("food", 0)) > 0:
-		player.add_item("food", -1)
-		player.hunger = 0.0
-		notify("Ты поел%s." % player.a())
+	if player.hunger >= 60.0:
+		var s := settlement_at(player.tile())
+		if int(player.inv.get("food", 0)) > 0:
+			player.add_item("food", -1)
+			player.hunger = 0.0
+			notify("Ты поел%s." % player.a())
+		elif s != null and _gives_rations(s) and float(s.stock.get("food", 0.0)) >= 1.0:
+			s.stock["food"] = float(s.stock["food"]) - 1.0
+			player.hunger = 0.0
+			notify("Тебе выдали паёк.")
 	if player.hunger >= 100.0:
 		player.hunger = 100.0
 		player.hp -= 4.0
-		notify("Ты голодаешь! Найди еду.")
+		if hour() % 6 == 0:
+			notify("Ты голодаешь! Найди еду.")
 		if player.hp <= 0.0:
 			Combat.kill(self, PLAYER, -1)
 	elif player.hp < 100.0:
 		player.hp = minf(100.0, player.hp + 1.0)
+
+
+## Свои кормят: солдата — в его лагере, раба — на руднике.
+func _gives_rations(s: Settlement) -> bool:
+	if player.faction != "" and s.faction == player.faction:
+		return true
+	return player.flags.get("slave", false) and s.kind == "mine" and s.faction == "syndicate"
 
 
 func _cleanup() -> void:
