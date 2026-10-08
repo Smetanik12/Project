@@ -3,3 +3,7 @@
 /android/
 *.translation
 export_presets.cfg
+
+# Скриншоты и карты из explorer/map_preview (папка есть в репозитории ради .gdignore)
+/shots/*
+!/shots/.gdignore

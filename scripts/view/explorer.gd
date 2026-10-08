@@ -1,8 +1,8 @@
 extends Node3D
 ## Обзор планеты без симуляции: камера над поселением, свободный полёт, скриншоты.
-##   godot --path . res://scenes/explorer.tscn -- --site=rodnik --time=10 --dist=60 --pitch=50 --yaw=30 --shot=/tmp/a.png
+##   godot --path . res://scenes/explorer.tscn -- --site=rodnik --time=10 --dist=60 --pitch=50 --yaw=30 --shot=shots/rodnik.png
 ## Флаги: --seed, --site=<id> или --at=x,y (тайлы), --time (часы), --winter (0..1),
-##        --dist, --pitch, --yaw, --shot=<png>.
+##        --dist, --pitch, --yaw, --shot=<png> (относительный путь — от папки проекта).
 ## Управление: WASD — лететь, колесо — приближение, Q/E — поворот, R/F — наклон.
 
 var planet: Planet
@@ -96,6 +96,11 @@ func _shot(path: String) -> void:
 		await get_tree().process_frame
 	for i in 6:
 		await get_tree().process_frame
-	get_viewport().get_texture().get_image().save_png(path)
-	print("скриншот: %s (%d мс)" % [path, Time.get_ticks_msec() - t0])
+	var full := U.out_path(path)
+	var err := get_viewport().get_texture().get_image().save_png(full)
+	if err != OK:
+		push_error("скриншот не сохранён: %s (ошибка %d)" % [full, err])
+		get_tree().quit(1)
+		return
+	print("скриншот: %s (%d мс)" % [full, Time.get_ticks_msec() - t0])
 	get_tree().quit()

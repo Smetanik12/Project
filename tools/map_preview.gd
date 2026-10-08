@@ -1,6 +1,6 @@
 extends SceneTree
 ## Отладка генератора: рисует крупную карту планеты в PNG.
-##   godot --headless --path . --script res://tools/map_preview.gd -- --seed=7 --out=/tmp/map.png
+##   godot --headless --path . --script res://tools/map_preview.gd -- --seed=7 --out=shots/map.png
 
 const COLORS := [Color(0.13, 0.27, 0.42), Color(0.86, 0.8, 0.58), Color(0.45, 0.62, 0.3), Color(0.22, 0.42, 0.2),
 	Color(0.25, 0.38, 0.3), Color(0.72, 0.74, 0.7), Color(0.68, 0.64, 0.38), Color(0.9, 0.76, 0.45), Color(0.7, 0.45, 0.3),
@@ -73,7 +73,13 @@ func _initialize() -> void:
 			var px := Vector2i(v)
 			if px.x >= 0 and px.y >= 0 and px.x < img.get_width() and px.y < img.get_height():
 				img.set_pixelv(px, col)
-	img.save_png(str(args.get("out", "/tmp/map.png")))
+	var out := U.out_path(str(args.get("out", "shots/map.png")))
+	var err := img.save_png(out)
+	if err != OK:
+		push_error("карта не сохранена: %s (ошибка %d)" % [out, err])
+		quit(1)
+		return
+	print("карта: %s" % out)
 	quit()
 
 

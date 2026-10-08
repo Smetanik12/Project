@@ -1,0 +1,3 @@
+# Концы строк — LF во всех текстовых файлах (как в шаблоне Godot). Без этого Git на Windows
+# может выдать файлы с CRLF, и bash-скрипты (.claude/hooks, tools/check.sh) перестанут работать.
+* text=auto eol=lf

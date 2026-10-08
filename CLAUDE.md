@@ -20,16 +20,19 @@
 
 ## Проверка (обязательно после каждого изменения)
 ```bash
-G=godot                                                  # Windows: путь к ..._win64_console.exe
-tools/check.sh                                           # синтаксис всех скриптов
-$G --headless --path . --script res://tests/test_planet.gd   # «ВСЕ ПРОВЕРКИ ПЛАНЕТЫ ПРОЙДЕНЫ»
-$G --path . res://scenes/explorer.tscn -- --site=rodnik --time=10 --shot=shot.png   # и посмотреть картинку
+G=godot          # Windows (Git Bash): G=/c/Godot/Godot_v4.5-stable_win64_console.exe
+tools/check.sh                                                 # синтаксис всех скриптов
+"$G" --headless --path . --script res://tests/test_planet.gd   # «ВСЕ ПРОВЕРКИ ПЛАНЕТЫ ПРОЙДЕНЫ»
+"$G" --path . res://scenes/explorer.tscn -- --site=rodnik --time=10 --shot=shots/rodnik.png   # и посмотреть картинку
 ```
+PowerShell и всё про Windows — ЭСТАФЕТА.md §2.
 Для каждой новой системы — тест на инварианты (пересечения, доступность, сохранение товаров,
 детерминизм, скорость). Графику — проверять скриншотом глазами.
 
 ## Подводные камни
-- Новый `class_name` → `$G --headless --path . --import`.
+- Новый `class_name` → `"$G" --headless --path . --import`.
+- Снимки и карты — только в `shots/` (там `.gdignore`, иначе Godot начнёт их импортировать).
+- Концы строк — LF (`.gitattributes`); bash-скрипты с CRLF не работают.
 - Не называть методы `_get`, `_set`, `_notification` и т.п. — конфликт с Object.
 - `var x := arr[i]` / `dict[k]` / `[a, b][i]` — тип явно: `var x: int = ...`.
 - Числа из JSON — `float`, оборачивать в `int()`.

@@ -61,3 +61,14 @@ static func hash3(a: int, b: int, c: int) -> int:
 ## Случайное число 0..1 из трёх целых.
 static func rnd3(a: int, b: int, c: int) -> float:
 	return float(hash3(a, b, c) % 1000003) / 1000003.0
+
+
+## Путь для файла вывода (скриншот, карта): относительный — от папки проекта, недостающие
+## папки создаются. Работает и с путями Windows (C:\...).
+static func out_path(path: String) -> String:
+	var p := path.replace("\\", "/")
+	if p.is_relative_path():
+		p = "res://" + p
+	p = ProjectSettings.globalize_path(p)
+	DirAccess.make_dir_recursive_absolute(p.get_base_dir())
+	return p
