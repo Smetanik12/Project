@@ -10,6 +10,9 @@ static var names: Dictionary = {}
 static var phrases: Dictionary = {}
 static var factions: Dictionary = {}
 static var settlements: Dictionary = {}
+static var landmarks: Dictionary = {}
+static var settlement_kinds: Dictionary = {}
+static var place_names: Dictionary = {}
 static var _loaded := false
 
 
@@ -23,6 +26,9 @@ static func ensure_loaded() -> void:
 	phrases = _load("phrases")
 	factions = _load("factions")
 	settlements = _load("settlements")
+	landmarks = _load("landmarks")
+	settlement_kinds = _load("settlement_kinds")
+	place_names = _load("place_names")
 	_loaded = true
 
 

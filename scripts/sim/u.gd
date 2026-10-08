@@ -44,3 +44,20 @@ static func direction(from: Vector2i, to: Vector2i) -> String:
 	if i < 0:
 		i += 8
 	return DIRS[i]
+
+
+## Целочисленный хэш (детерминированный, без знака): для генерации без общего RandomNumberGenerator.
+static func ihash(x: int) -> int:
+	x = ((x >> 16) ^ x) * 0x45d9f3b
+	x = ((x >> 16) ^ x) * 0x45d9f3b
+	x = (x >> 16) ^ x
+	return x & 0x7fffffff
+
+
+static func hash3(a: int, b: int, c: int) -> int:
+	return ihash(a * 73856093 ^ ihash(b * 19349663 ^ c * 83492791))
+
+
+## Случайное число 0..1 из трёх целых.
+static func rnd3(a: int, b: int, c: int) -> float:
+	return float(hash3(a, b, c) % 1000003) / 1000003.0

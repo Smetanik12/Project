@@ -1,0 +1,387 @@
+{
+ "_doc": "Типы поселений. r = [база, k]: радиус в тайлах = база + k * sqrt(население). core — доля радиуса под застройку (остальное поля). comp — доли профессий в населении (fisher — только у воды, woodcutter — у леса, herder — у пастбищ). forms — предлоги для «где / откуда».",
+ "kinds": {
+  "capital": {
+   "noun": "город",
+   "pop": [
+    1000000,
+    1300000
+   ],
+   "r": [
+    260,
+    1.0
+   ],
+   "core": 1.0,
+   "tech": 4,
+   "walls": true,
+   "comp": {
+    "dependent": 28,
+    "worker": 26,
+    "laborer": 8,
+    "official": 4,
+    "soldier": 7,
+    "guard": 2,
+    "officer": 0.4,
+    "merchant": 4,
+    "barkeep": 2,
+    "cook": 3,
+    "smith": 1.5,
+    "tailor": 1.5,
+    "medic": 1.5,
+    "farmer": 3,
+    "fisher": 1,
+    "drifter": 1.5,
+    "leader": 0.0001
+   }
+  },
+  "city": {
+   "noun": "город",
+   "pop": [
+    120000,
+    560000
+   ],
+   "r": [
+    150,
+    1.3
+   ],
+   "core": 1.0,
+   "tech": 3,
+   "walls": false,
+   "comp": {
+    "dependent": 29,
+    "worker": 22,
+    "laborer": 9,
+    "official": 2,
+    "soldier": 3,
+    "guard": 2.5,
+    "officer": 0.2,
+    "merchant": 4,
+    "barkeep": 2,
+    "cook": 3,
+    "smith": 2,
+    "tailor": 2,
+    "medic": 1.5,
+    "farmer": 7,
+    "fisher": 3,
+    "drifter": 2,
+    "leader": 0.0005
+   }
+  },
+  "town": {
+   "noun": "город",
+   "pop": [
+    6000,
+    60000
+   ],
+   "r": [
+    55,
+    1.6
+   ],
+   "core": 0.9,
+   "tech": 2,
+   "walls": false,
+   "comp": {
+    "dependent": 30,
+    "worker": 12,
+    "laborer": 9,
+    "official": 1,
+    "guard": 3,
+    "soldier": 1,
+    "merchant": 3,
+    "barkeep": 2,
+    "cook": 2,
+    "smith": 3,
+    "tailor": 2,
+    "medic": 1,
+    "farmer": 18,
+    "fisher": 5,
+    "herder": 3,
+    "woodcutter": 3,
+    "drifter": 1.5,
+    "leader": 0.003
+   }
+  },
+  "village": {
+   "noun": "деревня",
+   "pop": [
+    150,
+    2200
+   ],
+   "r": [
+    22,
+    2.2
+   ],
+   "core": 0.5,
+   "tech": 1,
+   "walls": false,
+   "comp": {
+    "dependent": 32,
+    "farmer": 34,
+    "fisher": 9,
+    "herder": 7,
+    "woodcutter": 5,
+    "hunter": 2,
+    "smith": 2,
+    "tailor": 1.5,
+    "barkeep": 1,
+    "cook": 1,
+    "medic": 0.7,
+    "merchant": 1,
+    "guard": 2,
+    "laborer": 3,
+    "leader": 0.2
+   }
+  },
+  "hamlet": {
+   "noun": "хутор",
+   "pop": [
+    12,
+    110
+   ],
+   "r": [
+    14,
+    2.2
+   ],
+   "core": 0.55,
+   "tech": 1,
+   "walls": false,
+   "comp": {
+    "dependent": 30,
+    "farmer": 40,
+    "fisher": 10,
+    "herder": 10,
+    "woodcutter": 6,
+    "hunter": 4
+   }
+  },
+  "mine": {
+   "noun": "рудник",
+   "pop": [
+    300,
+    2600
+   ],
+   "r": [
+    30,
+    1.0
+   ],
+   "core": 1.0,
+   "tech": 2,
+   "walls": true,
+   "comp": {
+    "miner": 55,
+    "slave": 0,
+    "guard": 9,
+    "officer": 1,
+    "smith": 3,
+    "cook": 3,
+    "medic": 1,
+    "laborer": 10,
+    "dependent": 15,
+    "barkeep": 1
+   }
+  },
+  "fort": {
+   "noun": "форт",
+   "pop": [
+    150,
+    900
+   ],
+   "r": [
+    26,
+    0.8
+   ],
+   "core": 1.0,
+   "tech": 2,
+   "walls": true,
+   "comp": {
+    "soldier": 70,
+    "officer": 5,
+    "smith": 4,
+    "medic": 4,
+    "cook": 6,
+    "laborer": 8,
+    "leader": 0.5
+   }
+  },
+  "camp": {
+   "noun": "лагерь",
+   "pop": [
+    60,
+    950
+   ],
+   "r": [
+    20,
+    1.2
+   ],
+   "core": 1.0,
+   "tech": 1,
+   "walls": false,
+   "comp": {
+    "scavenger": 55,
+    "dependent": 20,
+    "smith": 4,
+    "cook": 4,
+    "medic": 1,
+    "barkeep": 1,
+    "leader": 0.5,
+    "laborer": 10
+   }
+  },
+  "hideout": {
+   "noun": "логово",
+   "pop": [
+    15,
+    80
+   ],
+   "r": [
+    12,
+    1.0
+   ],
+   "core": 1.0,
+   "tech": 1,
+   "walls": false,
+   "comp": {
+    "pirate": 80,
+    "cook": 6,
+    "slave": 6,
+    "leader": 3
+   }
+  },
+  "ruins": {
+   "noun": "руины",
+   "pop": [
+    0,
+    0
+   ],
+   "r": [
+    25,
+    0.0
+   ],
+   "core": 1.0,
+   "tech": 0,
+   "walls": false,
+   "comp": {}
+  },
+  "trench": {
+   "noun": "окоп",
+   "pop": [
+    200,
+    500
+   ],
+   "r": [
+    34,
+    0.6
+   ],
+   "core": 1.0,
+   "tech": 2,
+   "walls": false,
+   "comp": {
+    "soldier": 82,
+    "officer": 4,
+    "medic": 4,
+    "cook": 4,
+    "laborer": 6
+   }
+  },
+  "cave": {
+   "noun": "пещера",
+   "pop": [
+    0,
+    0
+   ],
+   "r": [
+    10,
+    0.0
+   ],
+   "core": 1.0,
+   "tech": 0,
+   "walls": false,
+   "comp": {}
+  }
+ },
+ "forms": {
+  "город": [
+   "в городе",
+   "из города",
+   "у города"
+  ],
+  "деревня": [
+   "в деревне",
+   "из деревни",
+   "у деревни"
+  ],
+  "село": [
+   "в селе",
+   "из села",
+   "у села"
+  ],
+  "хутор": [
+   "на хуторе",
+   "с хутора",
+   "у хутора"
+  ],
+  "рудник": [
+   "на руднике",
+   "с рудника",
+   "у рудника"
+  ],
+  "форт": [
+   "в форте",
+   "из форта",
+   "у форта"
+  ],
+  "лагерь": [
+   "в лагере",
+   "из лагеря",
+   "у лагеря"
+  ],
+  "логово": [
+   "в логове",
+   "из логова",
+   "у логова"
+  ],
+  "руины": [
+   "в руинах",
+   "из руин",
+   "у руин"
+  ],
+  "окоп": [
+   "в окопе",
+   "из окопа",
+   "у окопа"
+  ],
+  "порт": [
+   "в порту",
+   "из порта",
+   "у порта"
+  ],
+  "пещера": [
+   "в пещере",
+   "из пещеры",
+   "у пещеры"
+  ]
+ },
+ "faction_overrides": {
+  "syndicate": {
+   "mine": {
+    "slave": 60,
+    "miner": 0,
+    "guard": 12
+   }
+  },
+  "empire": {
+   "town": {
+    "soldier": 4,
+    "official": 2
+   }
+  },
+  "front": {
+   "town": {
+    "soldier": 5
+   },
+   "village": {
+    "guard": 4
+   }
+  }
+ }
+}
