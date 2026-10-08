@@ -29,6 +29,8 @@ var ox := 0
 var oy := 0
 ## Высоты вершин (N+1)×(N+1), м.
 var hgt := PackedFloat32Array()
+## Высоты вершин с каймой: (N+3)×(N+3), от -1 до N+1 — для нормалей без швов.
+var hgt_ring := PackedFloat32Array()
 var ground := PackedByteArray()
 ## Уровень воды по тайлам, NO_WATER — суша.
 var water := PackedFloat32Array()

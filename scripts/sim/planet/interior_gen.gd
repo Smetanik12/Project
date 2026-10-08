@@ -110,21 +110,28 @@ static func enterable(s: Dictionary) -> bool:
 	return str(s["t"]) in ENTERABLE
 
 
-## План первого этажа (с кэшем в постройке). mutex — чей кэш защищать (мьютекс поселения).
-static func ground_floor(s: Dictionary, mutex: Mutex) -> Dictionary:
-	mutex.lock()
-	var bp: Dictionary = s.get("bp0", {})
-	mutex.unlock()
+## План первого этажа. Кэш — в поселении (под его мьютексом), а не в самой постройке:
+## словари построек после генерации не меняются, их можно читать из разных потоков.
+static func ground_floor(st: Site, s: Dictionary) -> Dictionary:
+	var key := _key(s)
+	st.mutex.lock()
+	var bp: Dictionary = st.plans.get(key, {})
+	st.mutex.unlock()
 	if not bp.is_empty():
 		return bp
 	bp = _plan(s, 0)
-	mutex.lock()
-	if s.has("bp0"):
-		bp = s["bp0"]
+	st.mutex.lock()
+	if st.plans.has(key):
+		bp = st.plans[key]
 	else:
-		s["bp0"] = bp
-	mutex.unlock()
+		st.plans[key] = bp
+	st.mutex.unlock()
 	return bp
+
+
+static func _key(s: Dictionary) -> Vector3i:
+	var r: Rect2i = s["r"]
+	return Vector3i(r.position.x, r.position.y, 0)
 
 
 static func _plan(s: Dictionary, floor_i: int) -> Dictionary:

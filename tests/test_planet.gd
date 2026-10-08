@@ -199,7 +199,7 @@ func _check_site(p: Planet, st: Site) -> int:
 	for s: Dictionary in rects:
 		if not InteriorGen.enterable(s):
 			continue
-		var bp := InteriorGen.ground_floor(s, st.mutex)
+		var bp := InteriorGen.ground_floor(st, s)
 		if bp["entry"].x < 0:
 			continue
 		var unreach := _unreachable_inside(s, bp)

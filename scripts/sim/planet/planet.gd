@@ -300,7 +300,7 @@ func build_indices() -> void:
 	for id in site_order:
 		var st: Site = sites[id]
 		# у деревень поля и причалы выходят за радиус
-		var r := st.radius + (48 if not st.is_city() else 4)
+		var r := st.radius + (48 if not st.is_city() else 16)
 		for cy in range(floori(float(st.center.y - r) / CHUNK), floori(float(st.center.y + r) / CHUNK) + 1):
 			for cx in range(floori(float(st.center.x - r) / CHUNK), floori(float(st.center.x + r) / CHUNK) + 1):
 				var key := Vector2i(cx, cy)

@@ -49,6 +49,8 @@ var lootable := false
 var layout: Array = []
 var layout_ready := false
 var blocks: Dictionary = {}
+## Планы этажей зданий: Vector3i(x, y, этаж) -> план (InteriorGen).
+var plans: Dictionary = {}
 var mutex := Mutex.new()
 
 

@@ -143,10 +143,15 @@ static func generate(p: Planet, cx: int, cy: int) -> Chunk:
 	for e: Array in c.structures:
 		if e[1]["t"] == "trench":
 			ctx.trenches.append(e[1]["pts"])
-	# 1) высоты вершин
+	# 1) высоты вершин с каймой в тайл (для нормалей без швов на стыках чанков)
+	var rn := N + 3
+	c.hgt_ring.resize(rn * rn)
+	for ry in rn:
+		for rx in rn:
+			c.hgt_ring[ry * rn + rx] = corner_height(ctx, float(c.ox + rx - 1), float(c.oy + ry - 1))
 	for vy in vn:
 		for vx in vn:
-			c.hgt[vy * vn + vx] = corner_height(ctx, float(c.ox + vx), float(c.oy + vy))
+			c.hgt[vy * vn + vx] = c.hgt_ring[(vy + 1) * rn + vx + 1]
 	c.min_h = INF
 	c.max_h = -INF
 	for hh in c.hgt:
@@ -414,7 +419,7 @@ static func _apply_structure(p: Planet, c: Chunk, st: Site, s: Dictionary) -> vo
 
 ## Здание с интерьером: пол внутри, стены по граням, мебель блокирует свои тайлы.
 static func _building(c: Chunk, st: Site, s: Dictionary, area: Rect2i) -> void:
-	var bp := InteriorGen.ground_floor(s, st.mutex)
+	var bp := InteriorGen.ground_floor(st, s)
 	var walls: Dictionary = bp["walls"]
 	for yy in range(area.position.y, area.end.y):
 		for xx in range(area.position.x, area.end.x):
