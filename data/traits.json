@@ -1,0 +1,17 @@
+{
+  "coward": {"name": "Трус", "conflicts": ["brave"], "courage": -40},
+  "brave": {"name": "Храбрый", "conflicts": ["coward"], "courage": 40},
+  "greedy": {"name": "Жадный", "conflicts": ["generous"], "greed": 40},
+  "generous": {"name": "Щедрый", "conflicts": ["greedy"], "greed": -30, "kindness": 10},
+  "honest": {"name": "Честный", "conflicts": ["liar"], "honesty": 50},
+  "liar": {"name": "Лжец", "conflicts": ["honest"], "honesty": -50},
+  "gossip": {"name": "Болтун", "conflicts": ["silent"], "talk": 50},
+  "silent": {"name": "Молчун", "conflicts": ["gossip"], "talk": -50},
+  "cruel": {"name": "Жестокий", "conflicts": ["kind"], "aggression": 40, "kindness": -40},
+  "kind": {"name": "Добрый", "conflicts": ["cruel"], "kindness": 40},
+  "paranoid": {"name": "Параноик", "conflicts": ["naive"], "suspicion": 50},
+  "naive": {"name": "Наивный", "conflicts": ["paranoid"], "suspicion": -40},
+  "vain": {"name": "Тщеславный", "conflicts": [], "vanity": 50},
+  "zealot": {"name": "Фанатик", "conflicts": [], "loyalty": 50},
+  "hothead": {"name": "Вспыльчивый", "conflicts": [], "aggression": 30}
+}

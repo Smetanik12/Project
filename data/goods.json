@@ -1,0 +1,8 @@
+{
+  "food": {"name": "Еда", "base_price": 4},
+  "water": {"name": "Вода", "base_price": 2},
+  "metal": {"name": "Металл", "base_price": 9},
+  "weapons": {"name": "Оружие", "base_price": 40},
+  "medicine": {"name": "Медикаменты", "base_price": 25},
+  "fuel": {"name": "Топливо", "base_price": 12}
+}

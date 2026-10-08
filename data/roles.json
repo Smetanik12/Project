@@ -1,0 +1,16 @@
+{
+  "leader": {"name": "Лидер", "combat": 9, "fighter": true, "money": 200},
+  "officer": {"name": "Офицер", "combat": 9, "fighter": true, "money": 80},
+  "soldier": {"name": "Солдат", "combat": 8, "fighter": true, "money": 20},
+  "guard": {"name": "Охранник", "combat": 8, "fighter": true, "money": 30},
+  "pirate": {"name": "Пират", "combat": 8, "fighter": true, "money": 40},
+  "scavenger": {"name": "Мусорщик", "combat": 6, "fighter": true, "work": "metal", "rate": 0.08, "money": 15},
+  "merchant": {"name": "Торговец", "combat": 3, "trader": true, "money": 150},
+  "farmer": {"name": "Фермер", "combat": 2, "work": "food", "rate": 0.25, "money": 10},
+  "slave": {"name": "Раб", "combat": 1, "work": "metal", "rate": 0.12, "money": 0},
+  "miner": {"name": "Шахтёр", "combat": 3, "work": "metal", "rate": 0.12, "money": 5},
+  "smith": {"name": "Оружейник", "combat": 4, "work": "weapons", "rate": 0.2, "money": 40},
+  "medic": {"name": "Медик", "combat": 2, "work": "medicine", "rate": 0.1, "money": 40},
+  "barkeep": {"name": "Бармен", "combat": 3, "trader": true, "money": 60},
+  "drifter": {"name": "Бродяга", "combat": 5, "money": 10}
+}
